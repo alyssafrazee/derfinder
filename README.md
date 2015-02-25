@@ -13,6 +13,44 @@ install_github('derfinder', 'alyssafrazee')
 ```
 You may also need to install `Genominator`, `limma`, `HiddenMarkov`, `splines`, and `locfdr`.
 
+## Installation details
+
+Note that this beta version runs on R 2.15.x Once you install or compile that version of R, you will likely need to download CRAN dependencies from its archive.
+
+Installing `devtools`
+
+```S
+## Install some pre-reqs for devtools
+install.packages(c('memoise', 'whisker'))
+```
+
+```bash
+## Install httr and devtools from the CRAN archive
+$ wget http://cran.r-project.org/src/contrib/Archive/httr/httr_0.2.tar.gz
+$ wget http://cran.r-project.org/src/contrib/Archive/devtools/devtools_1.1.tar.gz
+$ R CMD INSTALL httr_0.2.tar.gz
+$ R CMD INSTALL devtools_1.1.tar.gz
+```
+
+Installing `derfinder`
+
+```bash
+## Install locfdr from the CRAN archive
+$ wget http://cran.r-project.org/src/contrib/Archive/locfdr/locfdr_1.1-7.tar.gz
+$ R CMD INSTALL locfdr_1.1-7.tar.gz
+```
+
+```
+## Install Bioconductor dependencies
+source("http://bioconductor.org/biocLite.R")
+biocLite(c('Genominator', 'limma'))
+
+library('devtools')
+install_github('derfinder', 'alyssafrazee')
+```
+
+
+
 # preprocessing data
 Before using the `derfinder` R package, raw RNA-seq data should be processed as follows:
 
