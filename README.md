@@ -7,7 +7,7 @@ The package in this repository is an exact implementation of the methods describ
 
 # installation
 You can install this package directly from GitHub using the `install_github` function from the `devtools` package:
-```S
+```R
 library(devtools)
 install_github('derfinder', 'alyssafrazee')
 ```
@@ -19,7 +19,7 @@ Note that this beta version runs on R 2.15.x Once you install or compile that ve
 
 Installing `devtools`
 
-```S
+```R
 ## Install some pre-reqs for devtools
 install.packages(c('memoise', 'whisker'))
 ```
@@ -72,7 +72,7 @@ where `accepted_hits.bam` is the file of read alignments for the sample (this is
 
 ### merging coverage files
 The `<OUTFILES>` for each sample will need to be merged to create a nucleotide-by-sample matrix for analysis. If you have a giant computer (i.e., if you can hold this matrix in memory), you can do this in with some code like this: 
-```S
+```R
 # which chromosome?
 chr = "chr22"
 
@@ -108,7 +108,7 @@ This isn't super efficient, but it gets the job done. You can also use something
 # loading data
 After aligning and counting reads and merging each sample's read counts, we can begin using the `derfinder` package. We don't want to read the huge matrices into R, so we utilize SQLite databases - but everything is built into the R package, so no SQL commands are actually needed. The `makeDb` command creates the database, and you can explore the database with `Genominator`:
 
-```S
+```R
 # create database from merged file:
 library(derfinder)
 makeDb(dbfile = 'chr22_allcounts.db', textfile='chr22_allcounts.txt', tablename = 'chr22')
@@ -123,7 +123,7 @@ length(dat[,1]$pos)
 
 # nucleotide-level statistical analysis:
 As described in the manuscript, at each nucleotide, we see if a covariate of interest is associated with expression (i.e., coverage) using a linear model with coverage as outcome. The code to do this is:
-```S
+```R
 # define covariate:
 sex = c(1,1,0,0,1,1,0,0,1,1,1,1,0,0,1)
 
@@ -141,7 +141,7 @@ logfchange = tstats$logfchange
 
 # region-level statistical analysis
 We now fit a Hidden Markov Model to the test statistics from each base-pair to get regions of similar differential expression signal:
-```S
+```R
 params = getParams(tt)
 regions = getRegions(method='HMM', chromosome='chr22', pos = pos, 
   tstats=tt, stateprobs=params$stateprobs, params=params$params,
@@ -152,7 +152,7 @@ ders = subset(regions$states, state==3|state==4)
 head(ders)
 ```
 We can get region-level p-values using a permutation test (details in the manuscript). P-values can be adjusted for multiple testing (for false discovery rate control) by being converted to q-values.
-```S
+```R
 pvals = get.pvals(regions=regions$states, dbfile='chr22_allcounts.db',
   tablename='chr22', num.perms=1000, group=sex, est.params=params,
   chromosome='chr22') #takes a while
@@ -162,7 +162,7 @@ head(reg.withp)
 
 # connecting results to annotation
 The `getAnnotation` function allows users to download exon annotation information from UCSC, though changes to this database often break this function, so a more stable version will be available in the release version of the package. You can match regions to annotated exons using `getExons`:
-```S
+```R
 exons = getAnnotation('hg19', 'knownGene')
 chr22exons = subset(exons, chr=='chr22')
 getExons(region=c('chr22', 60234591, 60234791), annotation=chr22exons)
@@ -170,7 +170,7 @@ getExons(region=c('chr22', 60234591, 60234791), annotation=chr22exons)
 
 # visualizing results
 You can also plot specific regions, exons, or genes using one of the available plotting functions.  For example, to plot the second region in your `regions` object:
-```S
+```R
 plotRegion(regions, ind=2, tstats=tt, pos=pos, annotation=chr22exons,
   counts='chr22_allcounts.db', group=ifelse(sex==1, 'male', 'female'),
   tabname='chr22', chromosome='chr22')
