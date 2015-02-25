@@ -40,7 +40,7 @@ $ wget http://cran.r-project.org/src/contrib/Archive/locfdr/locfdr_1.1-7.tar.gz
 $ R CMD INSTALL locfdr_1.1-7.tar.gz
 ```
 
-```
+```R
 ## Install Bioconductor dependencies
 source("http://bioconductor.org/biocLite.R")
 biocLite(c('Genominator', 'limma'))
